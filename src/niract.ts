@@ -8,10 +8,17 @@ import { text } from "stream/consumers";
 
 type ElementType = "div" | "span" | "p" | "TEXT";
 
-type Element = {
-  type: ElementType | Function;
-  props: Record<string, any> & { nodeValue?: string; children: Element[] };
+type TextElement = {
+  type: "TEXT";
+  props: { nodeValue: string | number; children: [] };
 };
+
+type DomElement = {
+  type: Exclude<ElementType, "TEXT"> | Function;
+  props: Record<string, any> & { children: Element[] };
+};
+
+type Element = TextElement | DomElement;
 
 type Child = Element | string | number | null | undefined | false;
 
@@ -41,8 +48,42 @@ function createElement(
 // --- Phase 2: Rendering ---
 
 /** Render a VDOM tree into a real DOM container */
-function render(vdom: Element, container: HTMLElement): void {
-  // TODO: implement
+function renderTree(vdom: Element, container: HTMLElement): void | void[] {
+  if (vdom.type === "TEXT") {
+    const el = document.createTextNode(String(vdom.props.nodeValue));
+    container.appendChild(el);
+    return;
+  }
+
+  if (typeof vdom.type === "function") {
+    const v = vdom.type(vdom.props);
+    return renderTree(v, container);
+  }
+
+  if (vdom.props.children) {
+    const el = document.createElement(vdom.type);
+    const props = vdom.props;
+    Object.keys(props).map((prop) => {
+      if (prop === "children") return;
+      const propValue = props[prop];
+
+      if (prop === "style") return Object.assign(el.style, propValue);
+      if (prop.startsWith("on"))
+        return el.addEventListener(
+          prop.slice(2).toLocaleLowerCase(),
+          propValue
+        );
+      el[prop] = propValue;
+    });
+    container.appendChild(el);
+
+    return vdom.props.children.map((child) => renderTree(child, el));
+  }
+}
+
+function render(vdom: Element, container: HTMLElement): void | void[] {
+  container.innerHTML = "";
+  return renderTree(vdom, container);
 }
 
 // --- Phase 3: Reconciliation ---
