@@ -47,12 +47,28 @@ function createElement(
 
 // --- Phase 2: Rendering ---
 
+const eventName = (key: string) => key.slice(2).toLowerCase();
+
+/** Apply a single prop to a DOM element */
+function applyProp(el: HTMLElement, key: string, value: any): void {
+  if (key === "children") return;
+  if (key === "style") return Object.assign(el.style, value);
+  if (key.startsWith("on")) return el.addEventListener(eventName(key), value);
+  el[key] = value;
+}
+
+function removeProp(el: HTMLElement, key: string): void {
+  if (key === "children") return;
+  if (key === "style") return (el.style = {});
+  el[key] = "";
+}
+
 /** Render a VDOM tree into a real DOM container */
-function renderTree(vdom: Element, container: HTMLElement): void | void[] {
+function renderTree(vdom: Element, container: HTMLElement): Node {
   if (vdom.type === "TEXT") {
     const el = document.createTextNode(String(vdom.props.nodeValue));
     container.appendChild(el);
-    return;
+    return el;
   }
 
   if (typeof vdom.type === "function") {
@@ -61,31 +77,77 @@ function renderTree(vdom: Element, container: HTMLElement): void | void[] {
   }
 
   const el = document.createElement(vdom.type);
-  const props = vdom.props;
-  Object.keys(props).map((prop) => {
-    if (prop === "children") return;
-    const propValue = props[prop];
-
-    if (prop === "style") return Object.assign(el.style, propValue);
-    if (prop.startsWith("on"))
-      return el.addEventListener(prop.slice(2).toLocaleLowerCase(), propValue);
-    el[prop] = propValue;
-  });
+  Object.keys(vdom.props).forEach((key) => applyProp(el, key, vdom.props[key]));
   container.appendChild(el);
 
-  return vdom.props.children.map((child) => renderTree(child, el));
+  vdom.props.children.map((child) => renderTree(child, el));
+  return el;
 }
 
-function render(vdom: Element, container: HTMLElement): void | void[] {
-  container.innerHTML = "";
-  return renderTree(vdom, container);
+function render(vdom: Element, container: HTMLElement): void {
+  const oldVdom = container._oldvdom;
+
+  if (oldVdom) {
+    reconcileRender(oldVdom, vdom, container, 0);
+  } else {
+    container.innerHTML = "";
+    renderTree(vdom, container);
+  }
+
+  container._oldvdom = vdom;
 }
 
 // --- Phase 3: Reconciliation ---
 
 /** Diff old and new VDOM trees and patch the real DOM */
-function reconcile(oldVdom, newVdom, parentDom, index) {
-  // TODO: implement
+function reconcileRender(
+  oldVdom: Element,
+  newVdom: Element,
+  container: HTMLElement,
+  index: number = 0
+): void {
+  const domNode = container.childNodes[index];
+
+  if (oldVdom.type !== newVdom.type) {
+    const newNode = renderTree(newVdom, container);
+    container.removeChild(domNode);
+
+    container.appendChild(newNode);
+    return;
+  }
+
+  if (newVdom.type === "TEXT") {
+    domNode.nodeValue = newVdom.props.nodeValue;
+    return;
+  }
+
+  for (const prop in oldVdom.props) {
+    if (prop === "children") continue;
+
+    if (!newVdom.props[prop]) {
+      if (prop.startsWith("on"))
+        domNode.removeEventListener(eventName(prop), oldVdom.props[prop]);
+      removeProp(domNode, prop);
+    }
+  }
+
+  for (const prop in newVdom.props) {
+    if (prop === "children") continue;
+
+    if (!oldVdom[prop]) {
+      applyProp(domNode, prop, newVdom.props[prop]);
+    }
+  }
+
+  const oldChildren = oldVdom.props.children;
+  const newChildren = newVdom.props.children;
+
+  for (let i = 0; i < Math.max(oldChildren.length, newChildren.length); i++) {
+    if (!oldChildren[i]) return renderTree(newChildren[i], domNode);
+    if (!newChildren[i]) return domNode.removeChild(domNode.childNodes[i]);
+
+    reconcileRender(oldChildren[i], newChildren[i], domNode, i);
+  }
 }
 
 // --- Phase 4: Hooks ---

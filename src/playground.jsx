@@ -1,24 +1,20 @@
 import Niract from "./niract.ts";
 
-const app = (
-  <div>
-    <h2>Hello from Niract!</h2>
-    <p style={{ color: "red" }}>It works.</p>
-  </div>
-);
+const root = document.getElementById("root");
 
-Niract.render(app, document.getElementById("root"));
+function App(count) {
+  return (
+    <div>
+      <h2>Hello from Niract!</h2>
+      <p style={{ color: "red" }}>It works.</p>
+      <h2>Count: {count}</h2>
+      <button onClick={() => {
+        Niract.render(App(count + 1), root);
+      }}>+1</button>
+    </div>
+  );
+}
 
-// Playground — try your framework here!
-// Vite transforms JSX into MiniReact.createElement() calls automatically.
-//
-// Example (will work once you implement createElement + render):
-//
-// const app = <div>
-//   <h2>Hello from Mini React!</h2>
-//   <p>It works.</p>
-// </div>;
-//
-// MiniReact.render(app, document.getElementById("root"));
+Niract.render(App(0), root);
 
-console.log("Mini React playground loaded. Start building!");
+console.log("Niract playground loaded!");
