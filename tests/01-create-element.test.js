@@ -21,7 +21,7 @@ describe("Phase 1: createElement", () => {
     const vdom = createElement("p", null, "hello");
     expect(vdom.props.children).toHaveLength(1);
     expect(vdom.props.children[0]).toEqual({
-      type: "TEXT_ELEMENT",
+      type: "TEXT",
       props: { nodeValue: "hello", children: [] },
     });
   });
@@ -29,7 +29,7 @@ describe("Phase 1: createElement", () => {
   it("wraps number children as TEXT_ELEMENT nodes", () => {
     const vdom = createElement("span", null, 42);
     expect(vdom.props.children[0]).toEqual({
-      type: "TEXT_ELEMENT",
+      type: "TEXT",
       props: { nodeValue: 42, children: [] },
     });
   });
@@ -50,9 +50,9 @@ describe("Phase 1: createElement", () => {
       123
     );
     expect(vdom.props.children).toHaveLength(3);
-    expect(vdom.props.children[0].type).toBe("TEXT_ELEMENT");
+    expect(vdom.props.children[0].type).toBe("TEXT");
     expect(vdom.props.children[1].type).toBe("span");
-    expect(vdom.props.children[2].type).toBe("TEXT_ELEMENT");
+    expect(vdom.props.children[2].type).toBe("TEXT");
   });
 
   it("filters out falsy children (null, undefined, false)", () => {
