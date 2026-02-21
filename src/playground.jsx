@@ -1,10 +1,13 @@
-import MiniReact from "./mini-react.js";
+import Niract from "./niract.ts";
 
-const app = () => {
-  return <div>hello world</div>;
-};
+const app = (
+  <div>
+    <h2>Hello from Niract!</h2>
+    <p style={{ color: "red" }}>It works.</p>
+  </div>
+);
 
-MiniReact.render(app, document.getElementById("root"));
+Niract.render(app, document.getElementById("root"));
 
 // Playground — try your framework here!
 // Vite transforms JSX into MiniReact.createElement() calls automatically.

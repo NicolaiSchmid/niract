@@ -60,25 +60,20 @@ function renderTree(vdom: Element, container: HTMLElement): void | void[] {
     return renderTree(v, container);
   }
 
-  if (vdom.props.children) {
-    const el = document.createElement(vdom.type);
-    const props = vdom.props;
-    Object.keys(props).map((prop) => {
-      if (prop === "children") return;
-      const propValue = props[prop];
+  const el = document.createElement(vdom.type);
+  const props = vdom.props;
+  Object.keys(props).map((prop) => {
+    if (prop === "children") return;
+    const propValue = props[prop];
 
-      if (prop === "style") return Object.assign(el.style, propValue);
-      if (prop.startsWith("on"))
-        return el.addEventListener(
-          prop.slice(2).toLocaleLowerCase(),
-          propValue
-        );
-      el[prop] = propValue;
-    });
-    container.appendChild(el);
+    if (prop === "style") return Object.assign(el.style, propValue);
+    if (prop.startsWith("on"))
+      return el.addEventListener(prop.slice(2).toLocaleLowerCase(), propValue);
+    el[prop] = propValue;
+  });
+  container.appendChild(el);
 
-    return vdom.props.children.map((child) => renderTree(child, el));
-  }
+  return vdom.props.children.map((child) => renderTree(child, el));
 }
 
 function render(vdom: Element, container: HTMLElement): void | void[] {
@@ -138,7 +133,7 @@ function useCallback(callback, deps) {
 
 // --- Exports ---
 
-const MiniReact = {
+const Niract = {
   createElement,
   render,
   useState,
@@ -154,7 +149,7 @@ const MiniReact = {
   Fragment: "FRAGMENT",
 };
 
-export default MiniReact;
+export default Niract;
 export {
   createElement,
   render,
