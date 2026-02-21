@@ -41,7 +41,7 @@ function createElement(
 // --- Phase 2: Rendering ---
 
 /** Render a VDOM tree into a real DOM container */
-function render(vdom, container) {
+function render(vdom: Element, container: HTMLElement): void {
   // TODO: implement
 }
 
