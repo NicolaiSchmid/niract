@@ -1,5 +1,5 @@
 // ============================================
-// Mini React - Your framework goes here!
+// Niract - Your framework goes here!
 // ============================================
 
 // --- Phase 1: Virtual DOM ---
@@ -68,7 +68,7 @@ function useCallback(callback, deps) {
 
 // --- Exports ---
 
-const MiniReact = {
+const Niract = {
   createElement,
   render,
   useState,
@@ -84,7 +84,7 @@ const MiniReact = {
   Fragment: "FRAGMENT",
 };
 
-export default MiniReact;
+export default Niract;
 export {
   createElement,
   render,

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createElement } from "../src/mini-react.js";
+import { createElement } from "../src/niract.ts";
 
 describe("Phase 1: createElement", () => {
   it("creates a vdom node for a simple element", () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import MiniReact, { createElement, render, useState, useEffect } from "../src/mini-react.js";
+import Niract, { createElement, render, useState, useEffect } from "../src/niract.ts";
 
 describe("Phase 4: Hooks - useState", () => {
   let container;

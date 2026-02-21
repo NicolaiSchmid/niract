@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { createSignal, createEffect, createMemo } from "../src/mini-react.js";
+import { createSignal, createEffect, createMemo } from "../src/niract.ts";
 
 describe("Phase 5: Signals - createSignal", () => {
   it("returns a getter and setter", () => {

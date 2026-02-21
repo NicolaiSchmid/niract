@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { createElement, render } from "../src/mini-react.js";
+import { createElement, render } from "../src/niract.ts";
 
 describe("Phase 2: render", () => {
   let container;
