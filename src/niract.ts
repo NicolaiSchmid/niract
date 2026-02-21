@@ -28,7 +28,7 @@ function createElement(
   ...children: Child[]
 ): Element {
   const processedChildren = children
-    .filter((child) => !!child)
+    .filter((child) => child !== null && child !== undefined && child !== false)
     .map((child) => {
       if (typeof child === "string" || typeof child === "number")
         return {
