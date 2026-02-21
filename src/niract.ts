@@ -1,12 +1,41 @@
 // ============================================
-// Niract - Your framework goes here!
+// Mini React - Your framework goes here!
 // ============================================
+
+import { text } from "stream/consumers";
 
 // --- Phase 1: Virtual DOM ---
 
-/** Create a virtual DOM element */
-function createElement(type, props, ...children) {
-  // TODO: implement
+type ElementType = "div" | "span" | "p" | "TEXT";
+
+type Element = {
+  type: ElementType | Function;
+  props: Record<string, any> & { nodeValue?: string; children: Element[] };
+};
+
+type Child = Element | string | number | null | undefined | false;
+
+function createElement(
+  type: ElementType | Function,
+  props: Record<string, any> | null,
+  ...children: Child[]
+): Element {
+  const processedChildren = children
+    .filter((child) => !!child)
+    .map((child) => {
+      if (typeof child === "string" || typeof child === "number")
+        return {
+          type: "TEXT",
+          props: { nodeValue: child, children: [] },
+        };
+
+      return child;
+    });
+
+  return {
+    type,
+    props: { ...(props ?? {}), children: processedChildren },
+  };
 }
 
 // --- Phase 2: Rendering ---
@@ -68,7 +97,7 @@ function useCallback(callback, deps) {
 
 // --- Exports ---
 
-const Niract = {
+const MiniReact = {
   createElement,
   render,
   useState,
@@ -84,7 +113,7 @@ const Niract = {
   Fragment: "FRAGMENT",
 };
 
-export default Niract;
+export default MiniReact;
 export {
   createElement,
   render,
