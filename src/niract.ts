@@ -84,12 +84,21 @@ function renderTree(vdom: Element, container: HTMLElement): Node {
   return el;
 }
 
+let rootContainer: HTMLElement | null = null;
+let rootVdom: Element | null = null;
+
 function render(vdom: Element, container: HTMLElement): void {
+  rootContainer = container;
+  rootVdom = vdom;
+  hookIndex = 0;
+
   const oldVdom = container._oldvdom;
 
   if (oldVdom) {
     reconcileRender(oldVdom, vdom, container, 0);
   } else {
+    hooks = [];
+    hookIndex = 0;
     container.innerHTML = "";
     renderTree(vdom, container);
   }
@@ -107,6 +116,17 @@ function reconcileRender(
   index: number = 0,
 ): void {
   const domNode = container.childNodes[index];
+
+  if (
+    typeof oldVdom.type === "function" &&
+    typeof newVdom.type === "function"
+  ) {
+    const oldRendered = container._oldvdom;
+    const newRendered = newVdom.type(newVdom.props);
+
+    reconcileRender(oldRendered, newRendered, container, index);
+    return;
+  }
 
   if (oldVdom.type !== newVdom.type) {
     const newNode = renderTree(newVdom, container);
@@ -155,9 +175,32 @@ function reconcileRender(
 type SetStateAction<T> = T | ((prevState: T) => T);
 type Dispatch<T> = (action: SetStateAction<T>) => void;
 
+let hookIndex = 0;
+let hooks = [];
+
 /** State hook */
 function useState<T>(initialValue: T | (() => T)): [T, Dispatch<T>] {
-  // TODO: implement
+  const currentIndex = hookIndex;
+  const currentValue = hooks[currentIndex];
+
+  if (currentValue == null) hooks[currentIndex] = initialValue;
+
+  const rValue = [
+    hooks[currentIndex],
+    (newValue) => {
+      if (typeof newValue === "function") {
+        hooks[currentIndex] = newValue(hooks[currentIndex]);
+      } else {
+        hooks[currentIndex] = newValue;
+      }
+
+      if (!rootVdom || !rootContainer) return;
+      render(rootVdom, rootContainer);
+    },
+  ];
+  hookIndex++;
+
+  return rValue;
 }
 
 /** Effect hook */
