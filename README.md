@@ -11,10 +11,13 @@ Niract is a minimal implementation of React's core concepts — virtual DOM, ren
 | Phase | Topic | Tests | Status |
 |-------|-------|-------|--------|
 | 1 | `createElement` — Virtual DOM factory | 8 | Done |
-| 2 | `render` — DOM rendering | 7 | TODO |
-| 3 | `reconcile` — Diffing & patching | 7 | TODO |
+| 2 | `render` — DOM rendering | 7 | Done |
+| 3 | `reconcile` — Diffing & patching | 7 | Done |
 | 4 | `useState` / `useEffect` — Hooks | 7 | TODO |
 | 5 | `createSignal` / `createEffect` / `createMemo` — Signals | 11 | TODO |
+| 6 | Keyed reconciliation | 7 | TODO |
+| 7 | `useRef` — Refs | 5 | TODO |
+| 8 | `createContext` / `useContext` — Context | 6 | TODO |
 
 ## Getting started
 
