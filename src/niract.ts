@@ -104,7 +104,7 @@ function reconcileRender(
   oldVdom: Element,
   newVdom: Element,
   container: HTMLElement,
-  index: number = 0
+  index: number = 0,
 ): void {
   const domNode = container.childNodes[index];
 
@@ -152,8 +152,11 @@ function reconcileRender(
 
 // --- Phase 4: Hooks ---
 
+type SetStateAction<T> = T | ((prevState: T) => T);
+type Dispatch<T> = (action: SetStateAction<T>) => void;
+
 /** State hook */
-function useState(initialValue) {
+function useState<T>(initialValue: T | (() => T)): [T, Dispatch<T>] {
   // TODO: implement
 }
 
@@ -179,11 +182,25 @@ function createMemo(fn) {
   // TODO: implement
 }
 
-// --- Phase 7: Additional Hooks ---
+// --- Phase 7: Refs ---
 
-function useRef(initialValue) {
+function useRef(initialValue?) {
   // TODO: implement
 }
+
+// --- Phase 8: Context ---
+
+/** Create a context with a default value */
+function createContext(defaultValue?) {
+  // TODO: implement
+}
+
+/** Read the nearest Provider value for a context */
+function useContext(context) {
+  // TODO: implement
+}
+
+// --- Additional Hooks ---
 
 function useMemo(factory, deps) {
   // TODO: implement
@@ -207,6 +224,9 @@ const Niract = {
   createSignal,
   createEffect,
   createMemo,
+  // Context
+  createContext,
+  useContext,
   // Fragment placeholder
   Fragment: "FRAGMENT",
 };
@@ -223,4 +243,6 @@ export {
   createSignal,
   createEffect,
   createMemo,
+  createContext,
+  useContext,
 };
