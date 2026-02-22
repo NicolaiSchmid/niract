@@ -53,6 +53,7 @@ const eventName = (key: string) => key.slice(2).toLowerCase();
 function applyProp(el: HTMLElement, key: string, value: any): void {
   if (key === "children") return;
   if (key === "style") return Object.assign(el.style, value);
+  if (key === "ref") value.current = el;
   if (key.startsWith("on")) return el.addEventListener(eventName(key), value);
   el[key] = value;
 }
@@ -227,7 +228,19 @@ function createMemo(fn) {
 
 // --- Phase 7: Refs ---
 
-function useRef(initialValue?) {
+function useRef<T = undefined>(initialValue?: T): { current: T | undefined } {
+  const currentIndex = hookIndex;
+  const currentValue = hooks[currentIndex];
+
+  const r = currentValue ?? { current: initialValue };
+
+  if (currentValue == null) {
+    hooks[currentIndex] = r;
+  }
+
+  hookIndex++;
+
+  return r;
   // TODO: implement
 }
 
